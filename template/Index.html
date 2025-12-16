@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Groupie Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/global.css">
 </head>
 <body>
+<div class="page">
+    <div class="card">
+        <h1 class="title">Groupie Tracker</h1>
+        <p class="subtitle">Rechercher un artiste</p>
 
+        <form class="search" action="/Artiste" method="GET">
+            <input class="search__input" type="text" name="q" placeholder="Ex: Queen, Metallica...">
+            <button class="search__btn" type="submit">Rechercher</button>
+        </form>
+
+        <a class="btn-secondary" href="/Liste">Aller à la liste</a>
+    </div>
+</div>
 </body>
 </html>

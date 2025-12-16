@@ -10,10 +10,13 @@ import (
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("Static"))
+	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/Index", IndexPage)
+	// Search endpoint (expects ?q=...)
 	http.HandleFunc("/Artiste", ArtistePage)
+	// Detail endpoint: /Artiste/{id}
+	http.HandleFunc("/Artiste/", ArtistePage)
 	http.HandleFunc("/Liste", ListePage)
 	fmt.Println("Serveur démarré sur http://localhost:8080")
 	fmt.Println("Accédez à http://localhost:8080/Index pour commencer.")
@@ -51,12 +54,34 @@ func FetchArtists() ([]Artist, error) {
 	}
 	return artists, nil
 }
-func IndexPage(w http.ResponseWriter, r *http.Request) {
 
+func IndexPage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("template/Index.html")
+	if err != nil {
+		http.Error(w, "Erreur template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.Execute(w, nil); err != nil {
+		http.Error(w, "Erreur rendu: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func containsMember(members []string, qLower string) bool {
+	for _, m := range members {
+		if strings.Contains(strings.ToLower(m), qLower) {
+			return true
+		}
+	}
+	return false
 }
 
 func ArtistePage(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func ListePage(w http.ResponseWriter, r *http.Request) {
