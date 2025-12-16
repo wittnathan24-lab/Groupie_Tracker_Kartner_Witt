@@ -3,35 +3,35 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("static"))
+	fs := http.FileServer(http.Dir("Static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	// Routes
 	http.HandleFunc("/Index", IndexPage)
 	http.HandleFunc("/Artiste", ArtistePage)
 	http.HandleFunc("/Liste", ListePage)
 	fmt.Println("Serveur démarré sur http://localhost:8080")
-	fmt.Println("Accédez à http://localhost:8080/login pour commencer.")
+	fmt.Println("Accédez à http://localhost:8080/Index pour commencer.")
 	http.ListenAndServe(":8080", nil)
 }
 
 var ListOfArtists []Artist
 
 type Artist struct {
-	ID         int
-	Name       string
-	Image      string
-	Members    []string
-	Created    int
-	FirstAlbum string
-	Locations  string
-	Concerts   string
-	Relations  string
+	ID         int      `json:"id"`
+	Name       string   `json:"name"`
+	Image      string   `json:"image"`
+	Members    []string `json:"members"`
+	Created    int      `json:"creationDate"`
+	FirstAlbum string   `json:"firstAlbum"`
+	Locations  string   `json:"locations"`
+	Concerts   string   `json:"concertDates"`
+	Relations  string   `json:"relations"`
 }
 
 func FetchArtists() ([]Artist, error) {
@@ -51,7 +51,6 @@ func FetchArtists() ([]Artist, error) {
 	}
 	return artists, nil
 }
-
 func IndexPage(w http.ResponseWriter, r *http.Request) {
 
 }
