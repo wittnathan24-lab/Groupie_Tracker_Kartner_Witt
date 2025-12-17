@@ -18,6 +18,8 @@ func main() {
 	// Detail endpoint: /Artiste/{id}
 	http.HandleFunc("/Artiste/", ArtistePage)
 	http.HandleFunc("/Liste", ListePage)
+	// Dynamic search suggestions
+	http.HandleFunc("/api/search", SearchAPI)
 	fmt.Println("Serveur démarré sur http://localhost:8080")
 	fmt.Println("Accédez à http://localhost:8080/Index pour commencer.")
 	http.ListenAndServe(":8080", nil)
@@ -82,8 +84,90 @@ func containsMember(members []string, qLower string) bool {
 }
 
 func ArtistePage(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func ListePage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+	tmpl, err := template.ParseFiles("template/Liste.html")
+	if err != nil {
+		http.Error(w, "Erreur template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.Execute(w, nil); err != nil {
+		http.Error(w, "Erreur rendu: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
 
+func SearchAPI(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+	q := strings.TrimSpace(r.URL.Query().Get("q"))
+	if q == "" {
+		// empty query -> empty list (avoid noise)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("[]"))
+		return
+	}
+	if len(ListOfArtists) == 0 {
+		artists, err := FetchArtists()
+		if err != nil {
+			http.Error(w, "Erreur lors du chargement des artistes: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		ListOfArtists = artists
+	}
+	qLower := strings.ToLower(q)
+	type item struct {
+		ID    int    `json:"id"`
+		Name  string `json:"name"`
+		Image string `json:"image"`
+	}
+	seen := make(map[int]bool)
+	results := make([]item, 0, 8)
+
+	add := func(a Artist) {
+		if seen[a.ID] {
+			return
+		}
+		seen[a.ID] = true
+		results = append(results, item{ID: a.ID, Name: a.Name, Image: a.Image})
+	}
+	for _, a := range ListOfArtists {
+		if len(results) >= 8 {
+			break
+		}
+		if strings.HasPrefix(strings.ToLower(a.Name), qLower) {
+			add(a)
+		}
+	}
+	for _, a := range ListOfArtists {
+		if len(results) >= 8 {
+			break
+		}
+		if strings.Contains(strings.ToLower(a.Name), qLower) {
+			add(a)
+		}
+	}
+	for _, a := range ListOfArtists {
+		if len(results) >= 8 {
+			break
+		}
+		if containsMember(a.Members, qLower) {
+			add(a)
+		}
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	enc := json.NewEncoder(w)
+	if err := enc.Encode(results); err != nil {
+		http.Error(w, "Erreur d'encodage JSON", http.StatusInternalServerError)
+		return
+	}
 }

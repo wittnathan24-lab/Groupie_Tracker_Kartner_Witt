@@ -12,13 +12,90 @@
         <h1 class="title">Groupie Tracker</h1>
         <p class="subtitle">Rechercher un artiste</p>
 
-        <form class="search" action="/Artiste" method="GET">
-            <input class="search__input" type="text" name="q" placeholder="Ex: Queen, Metallica...">
-            <button class="search__btn" type="submit">Rechercher</button>
+        <form class="search" action="/Artiste" method="GET" autocomplete="off">
+            <input id="searchInput" class="search__input" type="text" name="q" placeholder="Ex: Queen, Metallica..." aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false">
+            <div id="suggestions" class="suggestions" role="listbox" hidden></div>
         </form>
 
         <a class="btn-secondary" href="/Liste">Aller à la liste</a>
     </div>
 </div>
+<script>
+// Simple debounce
+function debounce(fn, delay){
+  let t; return function(...args){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), delay); };
+}
+(function(){
+  const input = document.getElementById('searchInput');
+  const box = document.getElementById('suggestions');
+  let items = [];
+  let activeIndex = -1;
+
+  function hide(){ box.hidden = true; box.innerHTML=''; input.setAttribute('aria-expanded','false'); activeIndex=-1; items=[]; }
+  function show(){ box.hidden = false; input.setAttribute('aria-expanded','true'); }
+  function render(list){
+    if(!list || list.length===0){ hide(); return; }
+    box.innerHTML = list.map((it,i)=>`
+      <div class="suggestions__item" role="option" data-id="${it.id}" aria-selected="${i===activeIndex}">
+        <img class="suggestions__avatar" src="${it.image}" alt="" loading="lazy"/>
+        <span class="suggestions__name">${it.name}</span>
+      </div>`).join('');
+    items = Array.from(box.querySelectorAll('.suggestions__item'));
+    items.forEach((el,i)=>{
+      el.addEventListener('mousedown', (e)=>{ // use mousedown to fire before input blur
+        e.preventDefault();
+        const id = el.getAttribute('data-id');
+        if(id){ window.location.href = '/Artiste/' + id; }
+      });
+    });
+    highlight(activeIndex);
+    show();
+  }
+  function highlight(index){
+    items.forEach((el,i)=>{
+      if(i===index){ el.classList.add('is-active'); el.setAttribute('aria-selected','true'); }
+      else { el.classList.remove('is-active'); el.setAttribute('aria-selected','false'); }
+    });
+  }
+
+  async function search(q){
+    if(!q || q.trim()===''){ hide(); return; }
+    try{
+      const res = await fetch('/api/search?q='+encodeURIComponent(q.trim()));
+      if(!res.ok){ hide(); return; }
+      const data = await res.json();
+      activeIndex = -1;
+      render(data);
+    }catch{ hide(); }
+  }
+  const debounced = debounce(search, 200);
+
+  input.addEventListener('input', ()=>{ debounced(input.value); });
+  input.addEventListener('focus', ()=>{ if(items.length>0) show(); });
+  input.addEventListener('blur', ()=>{ // delay hide to allow click
+    setTimeout(hide, 100);
+  });
+  input.addEventListener('keydown', (e)=>{
+    if(box.hidden) return;
+    if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(items.length===0) return;
+      activeIndex = (activeIndex+1) % items.length; highlight(activeIndex);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(items.length===0) return;
+      activeIndex = (activeIndex-1+items.length) % items.length; highlight(activeIndex);
+    } else if(e.key==='Enter'){
+      if(activeIndex>=0 && items[activeIndex]){
+        e.preventDefault();
+        const id = items[activeIndex].getAttribute('data-id');
+        if(id){ window.location.href = '/Artiste/' + id; }
+      }
+    } else if(e.key==='Escape'){
+      hide();
+    }
+  });
+})();
+</script>
 </body>
 </html>
