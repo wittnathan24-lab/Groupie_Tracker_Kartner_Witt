@@ -84,7 +84,47 @@ func containsMember(members []string, qLower string) bool {
 }
 
 func ArtistePage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
 
+	// Load artists if not loaded
+	if len(ListOfArtists) == 0 {
+		artists, err := FetchArtists()
+		if err != nil {
+			http.Error(w, "Erreur chargement: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		ListOfArtists = artists
+	}
+
+	// 1. Check for specific ID in URL path: /Artiste/1
+	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
+	if len(pathParts) > 1 && pathParts[1] != "" {
+		// Handle ID logic (template rendering for single artist)
+		// For now, we assume you have logic to show Artiste.html
+		tmpl, _ := template.ParseFiles("template/Artiste.html")
+		// Find artist by ID and execute tmpl...
+		_ = tmpl
+		return
+	}
+
+	// 2. Check for search query: /Artiste?q=queen
+	q := strings.TrimSpace(r.URL.Query().Get("q"))
+	if q != "" {
+		qLower := strings.ToLower(q)
+		for _, a := range ListOfArtists {
+			if strings.ToLower(a.Name) == qLower {
+				// Exact match found: redirect to the ID-based URL
+				http.Redirect(w, r, fmt.Sprintf("/Artiste/%d", a.ID), http.StatusFound)
+				return
+			}
+		}
+	}
+
+	// If no exact match or no query, you might want to show a list or 404
+	http.Error(w, "Artiste non trouvé", http.StatusNotFound)
 }
 
 func ListePage(w http.ResponseWriter, r *http.Request) {

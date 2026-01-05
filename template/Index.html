@@ -21,7 +21,6 @@
     </div>
 </div>
 <script>
-// Simple debounce
 function debounce(fn, delay){
   let t; return function(...args){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), delay); };
 }
@@ -42,7 +41,7 @@ function debounce(fn, delay){
       </div>`).join('');
     items = Array.from(box.querySelectorAll('.suggestions__item'));
     items.forEach((el,i)=>{
-      el.addEventListener('mousedown', (e)=>{ // use mousedown to fire before input blur
+      el.addEventListener('mousedown', (e)=>{
         e.preventDefault();
         const id = el.getAttribute('data-id');
         if(id){ window.location.href = '/Artiste/' + id; }
@@ -76,21 +75,23 @@ function debounce(fn, delay){
     setTimeout(hide, 100);
   });
   input.addEventListener('keydown', (e)=>{
-    if(box.hidden) return;
     if(e.key==='ArrowDown'){
+      if(box.hidden) return;
       e.preventDefault();
       if(items.length===0) return;
       activeIndex = (activeIndex+1) % items.length; highlight(activeIndex);
     } else if(e.key==='ArrowUp'){
+      if(box.hidden) return;
       e.preventDefault();
       if(items.length===0) return;
       activeIndex = (activeIndex-1+items.length) % items.length; highlight(activeIndex);
     } else if(e.key==='Enter'){
-      if(activeIndex>=0 && items[activeIndex]){
+      if(!box.hidden && activeIndex>=0 && items[activeIndex]){
         e.preventDefault();
         const id = items[activeIndex].getAttribute('data-id');
         if(id){ window.location.href = '/Artiste/' + id; }
       }
+      // If activeIndex < 0, the form will submit normally to /Artiste?q=...
     } else if(e.key==='Escape'){
       hide();
     }
