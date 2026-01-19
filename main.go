@@ -132,17 +132,27 @@ func ListePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
 	}
+
+	if len(ListOfArtists) == 0 {
+		artists, err := FetchArtists()
+		if err != nil {
+			http.Error(w, "Erreur chargement API: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		ListOfArtists = artists
+	}
+
 	tmpl, err := template.ParseFiles("template/Liste.html")
 	if err != nil {
 		http.Error(w, "Erreur template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if err := tmpl.Execute(w, nil); err != nil {
+
+	if err := tmpl.Execute(w, ListOfArtists); err != nil {
 		http.Error(w, "Erreur rendu: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
-
 func SearchAPI(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)

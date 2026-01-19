@@ -1,10 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive des Artistes | Groupie Tracker</title>
+    <style>
+        :root {
+            --bg-color: #08080a;
+            --card-bg: #111114;
+            --accent-color: #00f2ff;
+            --text-color: #e0e0e0;
+            --border-style: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: var(--border-style);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-glitch {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        /* La Grille */
+        .artist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* La Carte Artiste */
+        .artist-card {
+            background: var(--card-bg);
+            border: var(--border-style);
+            border-radius: 4px; /* Coins légèrement arrondis pour un look pro */
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Effet au survol sans JS */
+        .artist-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.15);
+        }
+
+        .image-box {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%) brightness(0.8);
+            transition: 0.5s ease;
+        }
+
+        .artist-card:hover img {
+            filter: grayscale(0%) brightness(1);
+            transform: scale(1.05);
+        }
+
+        /* Overlay Cyber */
+        .image-box::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, var(--card-bg) 0%, transparent 50%);
+        }
+
+        .info-content {
+            padding: 20px;
+            border-top: var(--border-style);
+        }
+
+        .artist-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .meta-data {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .btn-view {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+            padding: 8px;
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        .artist-card:hover .btn-view {
+            background: var(--accent-color);
+            color: black;
+        }
+
+        .back-btn {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
+
+<div class="container">
+    <header>
+        <div>
+            <a href="/Index" class="back-btn">← RETOUR</a>
+            <div class="title-glitch">Liste Artistes</div>
+        </div>
+        <div class="meta-data">Status: <span style="color: #00ff00;">Online</span></div>
+    </header>
+
+    <main class="artist-grid">
+        {{range .}}
+        <a href="/Artiste/{{.ID}}" class="artist-card">
+            <div class="image-box">
+                <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
+            </div>
+            <div class="info-content">
+                <span class="artist-name">{{.Name}}</span>
+                <div class="number-member">Membre :{{.Members}}</div>
+                <div class="meta-data">Année de création {{.Created}}</div>
+                <div class="btn-view">CONSULTER LE DOSSIER</div>
+            </div>
+        </a>
+        {{end}}
+    </main>
+</div>
 
 </body>
 </html>
