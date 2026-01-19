@@ -9,7 +9,7 @@
 <body>
 <div class="page">
     <div class="card">
-        <h1 class="title">Groupie Tracker</h1>
+        <h1 class="title">Bienvenue sur Groupie Tracker</h1>
         <p class="subtitle">Rechercher un artiste</p>
 
         <form class="search" action="/Artiste" method="GET" autocomplete="off">
@@ -19,6 +19,10 @@
 
         <a class="btn-secondary" href="/Liste">Aller à la liste</a>
     </div>
+    <footer class="footer">
+        <p>Grâce à Groupie Tracker vous pourrez rechercher tous vos artistes préférés et obtenir des informations sur eux.</p>
+        <span class="mentions">Groupie Tracker -  WK  - 2026</span>
+    </footer>
 </div>
 <script>
 function debounce(fn, delay){
@@ -86,12 +90,13 @@ function debounce(fn, delay){
       if(items.length===0) return;
       activeIndex = (activeIndex-1+items.length) % items.length; highlight(activeIndex);
     } else if(e.key==='Enter'){
-      if(!box.hidden && activeIndex>=0 && items[activeIndex]){
-        e.preventDefault();
-        const id = items[activeIndex].getAttribute('data-id');
-        if(id){ window.location.href = '/Artiste/' + id; }
+      if(!box.hidden && activeIndex>=0 && items[activeIndex]) {
+          e.preventDefault();
+          const id = items[activeIndex].getAttribute('data-id');
+          if (id) {
+              window.location.href = '/Artiste/' + id;
+          }
       }
-      // If activeIndex < 0, the form will submit normally to /Artiste?q=...
     } else if(e.key==='Escape'){
       hide();
     }

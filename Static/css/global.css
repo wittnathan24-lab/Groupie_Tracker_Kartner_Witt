@@ -28,8 +28,10 @@ body {
 
 .page {
     min-height: 100vh;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 32px 16px;
 }
 
@@ -143,4 +145,30 @@ body {
 .suggestions__name {
   font-size: 14px;
   color: #111827;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px 16px;
+    gap: 8px;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.footer .mentions {
+    font-size: 12px;
+    color: var(--muted);
+    opacity: 0.7;
 }
