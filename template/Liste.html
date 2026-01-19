@@ -137,6 +137,22 @@
             text-decoration: none;
             font-size: 0.9rem;
         }
+        .members-container {
+            display: flex;
+            flex-wrap: wrap; /* Aligne les noms et revient à la ligne si besoin */
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .member-tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -158,7 +174,11 @@
             </div>
             <div class="info-content">
                 <span class="artist-name">{{.Name}}</span>
-                <div class="number-member">Membre :{{.Members}}</div>
+                <div class="members-container">Membre(s) :
+                    {{range .Members}}
+                    <span class="member-tag">{{.}}</span>
+                    {{end}}
+                </div>
                 <div class="meta-data">Année de création {{.Created}}</div>
                 <div class="btn-view">CONSULTER LE DOSSIER</div>
             </div>
