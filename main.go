@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,12 +14,9 @@ func main() {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/Index", IndexPage)
-	// Search endpoint (expects ?q=...)
 	http.HandleFunc("/Artiste", ArtistePage)
-	// Detail endpoint: /Artiste/{id}
 	http.HandleFunc("/Artiste/", ArtistePage)
 	http.HandleFunc("/Liste", ListePage)
-	// Dynamic search suggestions
 	http.HandleFunc("/api/search", SearchAPI)
 	fmt.Println("Serveur démarré sur http://localhost:8080")
 	fmt.Println("Accédez à http://localhost:8080/Index pour commencer.")
@@ -37,6 +35,11 @@ type Artist struct {
 	Locations  string   `json:"locations"`
 	Concerts   string   `json:"concertDates"`
 	Relations  string   `json:"relations"`
+}
+
+type Relation struct {
+	ID             int                 `json:"id"`
+	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
 func FetchArtists() ([]Artist, error) {
@@ -89,7 +92,6 @@ func ArtistePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Load artists if not loaded
 	if len(ListOfArtists) == 0 {
 		artists, err := FetchArtists()
 		if err != nil {
@@ -99,31 +101,72 @@ func ArtistePage(w http.ResponseWriter, r *http.Request) {
 		ListOfArtists = artists
 	}
 
-	// 1. Check for specific ID in URL path: /Artiste/1
 	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
 	if len(pathParts) > 1 && pathParts[1] != "" {
-		// Handle ID logic (template rendering for single artist)
-		// For now, we assume you have logic to show Artiste.html
-		tmpl, _ := template.ParseFiles("template/Artiste.html")
-		// Find artist by ID and execute tmpl...
-		_ = tmpl
+		idStr := pathParts[1]
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			http.Error(w, "ID invalide", http.StatusBadRequest)
+			return
+		}
+
+		var selectedArtist Artist
+		found := false
+		for _, a := range ListOfArtists {
+			if a.ID == id {
+				selectedArtist = a
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			http.Error(w, "Artiste introuvable", http.StatusNotFound)
+			return
+		}
+
+		resp, err := http.Get(selectedArtist.Relations)
+		if err != nil {
+			http.Error(w, "Erreur API Relations: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer resp.Body.Close()
+
+		var rel Relation
+		if err := json.NewDecoder(resp.Body).Decode(&rel); err != nil {
+			http.Error(w, "Erreur décodage Relations: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data := struct {
+			Artist
+			RelationsMap map[string][]string
+		}{
+			Artist:       selectedArtist,
+			RelationsMap: rel.DatesLocations,
+		}
+
+		tmpl, err := template.ParseFiles("template/Artiste.html")
+		if err != nil {
+			http.Error(w, "Erreur template: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		tmpl.Execute(w, data)
 		return
 	}
 
-	// 2. Check for search query: /Artiste?q=queen
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 	if q != "" {
 		qLower := strings.ToLower(q)
 		for _, a := range ListOfArtists {
 			if strings.ToLower(a.Name) == qLower {
-				// Exact match found: redirect to the ID-based URL
 				http.Redirect(w, r, fmt.Sprintf("/Artiste/%d", a.ID), http.StatusFound)
 				return
 			}
 		}
 	}
 
-	// If no exact match or no query, you might want to show a list or 404
 	http.Error(w, "Artiste non trouvé", http.StatusNotFound)
 }
 
@@ -153,6 +196,7 @@ func ListePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
 func SearchAPI(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
@@ -160,7 +204,6 @@ func SearchAPI(w http.ResponseWriter, r *http.Request) {
 	}
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 	if q == "" {
-		// empty query -> empty list (avoid noise)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("[]"))

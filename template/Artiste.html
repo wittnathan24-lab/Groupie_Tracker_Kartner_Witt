@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ .Name }} - Groupie Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/Artiste.css">
 </head>
 <body>
+
+<div class="page">
+    <div class="artist-container">
+
+        <a href="/Index" class="back-link">← Retour à l'accueil</a>
+
+        <div class="header-profile">
+            <img class="profile-img" src="{{ .Image }}" alt="{{ .Name }}">
+            <h1 class="artist-title">{{ .Name }}</h1>
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-card">
+                <span class="info-label">Membres</span>
+                <ul class="member-list">
+                    {{ range .Members }}
+                    <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <span class="info-label">À propos</span>
+                <p><strong>Date de création :</strong> <br> {{ .Created }}</p>
+                <p><strong>Premier Album :</strong> <br> {{ .FirstAlbum }}</p>
+            </div>
+
+            <div class="info-card" style="grid-column: 1 / -1;"> <span class="info-label">Dates & Lieux de Concerts</span>
+
+                {{ if .RelationsMap }}
+                <ul class="concert-list">
+                    {{ range $location, $dates := .RelationsMap }}
+                    <li class="concert-item">
+                        <span class="concert-location">{{ $location }}</span>
+                        <div class="concert-dates">
+                            {{ range $dates }}
+                            <span class="date-tag">{{ . }}</span>
+                            {{ end }}
+                        </div>
+                    </li>
+                    {{ end }}
+                </ul>
+                {{ else }}
+                <p style="color: var(--muted);">Aucune date de concert disponible.</p>
+                {{ end }}
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span class="mentions">Groupie Tracker - 2026</span>
+    </footer>
+</div>
 
 </body>
 </html>

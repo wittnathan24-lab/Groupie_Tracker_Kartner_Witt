@@ -20,10 +20,14 @@ body {
     margin: 0;
     font-family: system-ui;
     color: var(--text);
+    min-height: 100vh;
     background:
-            radial-gradient(1200px 700px at 15% 10%, rgba(124, 92, 255, 0.35), transparent 60%),
-            radial-gradient(1000px 700px at 85% 30%, rgba(106, 168, 255, 0.25), transparent 60%),
-            linear-gradient(180deg, var(--bg1), var(--bg2));
+            radial-gradient(60vw 50vh at 15% 10%, rgba(124, 92, 255, 0.35), transparent 60%),
+            radial-gradient(50vw 50vh at 85% 30%, rgba(106, 168, 255, 0.25), transparent 60%),
+            linear-gradient(90deg, var(--bg1), var(--bg2));
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 .page {
