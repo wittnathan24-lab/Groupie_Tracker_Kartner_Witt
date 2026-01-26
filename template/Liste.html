@@ -7,19 +7,27 @@
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/Liste.css">
 </head>
-<body>
+<body class="{{if .DarkMode}}dark-mode{{end}}">
 
 <div class="container">
-    <header>
-        <div>
-            <a href="/Index" class="back-btn">← RETOUR</a>
-            <div class="title-glitch">Liste Artistes</div>
+    <header class="main-header">
+        <div class="header-container">
+            <div>
+                <a href="/Index" class="back-btn">← RETOUR</a>
+                <div class="title-glitch">Liste Artistes</div>
+            </div>
+
+            <div class="theme-controls">
+                <a href="/toggle-theme" class="theme-btn">
+                    {{if .DarkMode}}☀️ Mode Clair{{else}}🌙 Mode Sombre{{end}}
+                </a>
+                <div class="meta-data">Status: <span style="color: #00ff00;">Online</span></div>
+            </div>
         </div>
-        <div class="meta-data">Status: <span style="color: #00ff00;">Online</span></div>
     </header>
 
     <main class="artist-grid">
-        {{range .}}
+        {{range .Artists}}
         <a href="/Artiste/{{.ID}}" class="artist-card">
             <div class="image-box">
                 <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">

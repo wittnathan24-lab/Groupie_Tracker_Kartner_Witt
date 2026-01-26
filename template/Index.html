@@ -3,121 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Groupie Tracker</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/css/global.css">
 </head>
-<body>
-<input type="checkbox" id="theme-switch" class="theme-input">
+<body class="{{if .DarkMode}}dark-mode{{end}}">
 
 <header class="main-header">
     <div class="header-container">
-        <div class="logo">
-            <a href="/">🎵 Groupie<span>Tracker</span></a>
-        </div>
-
-        <label for="theme-switch" class="theme-label">
-            <span class="icon-sun">☀️</span>
-            <span class="icon-moon">🌙</span>
-        </label>
+        <div style="font-weight: bold; font-size: 1.2rem;">🎵 GroupieTracker</div>
+        <a href="/toggle-theme" class="theme-btn">
+            {{if .DarkMode}}☀️ Mode Clair{{else}}🌙 Mode Sombre{{end}}
+        </a>
     </div>
 </header>
 
 <div class="page">
     <div class="card">
-        <h1 class="title">Bienvenue sur Groupie Tracker</h1>
-        <p class="subtitle">Rechercher un artiste</p>
-
-        <form class="search" action="/Artiste" method="GET" autocomplete="off">
-            <input id="searchInput" class="search__input" type="text" name="q" placeholder="Ex: Queen, Metallica..." aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false">
-            <div id="suggestions" class="suggestions" role="listbox" hidden></div>
-        </form>
-
+        <h1>Bienvenue sur Groupie Tracker</h1>
+        <p style="opacity: 0.7;">Rechercher un artiste</p>
+        <div class="search">
+            <input id="searchInput" class="search__input" type="text" placeholder="Queen, Metallica...">
+            <div id="suggestions" class="suggestions" hidden></div>
+        </div>
         <a class="btn-secondary" href="/Liste">Aller à la liste</a>
+        <div style="margin-top: 30px; font-size: 0.8rem; opacity: 0.5;">
+            Groupie Tracker - WK - 2026
+        </div>
     </div>
-    <footer class="footer">
-        <p>Grâce à Groupie Tracker vous pourrez rechercher tous vos artistes préférés et obtenir des informations sur eux.</p>
-        <span class="mentions">Groupie Tracker -  WK  - 2026</span>
-    </footer>
 </div>
+
 <script>
-
-function debounce(fn, delay){
-  let t; return function(...args){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), delay); };
-}
-(function(){
-  const input = document.getElementById('searchInput');
-  const box = document.getElementById('suggestions');
-  let items = [];
-  let activeIndex = -1;
-
-  function hide(){ box.hidden = true; box.innerHTML=''; input.setAttribute('aria-expanded','false'); activeIndex=-1; items=[]; }
-  function show(){ box.hidden = false; input.setAttribute('aria-expanded','true'); }
-  function render(list){
-    if(!list || list.length===0){ hide(); return; }
-    box.innerHTML = list.map((it,i)=>`
-      <div class="suggestions__item" role="option" data-id="${it.id}" aria-selected="${i===activeIndex}">
-        <img class="suggestions__avatar" src="${it.image}" alt="" loading="lazy"/>
-        <span class="suggestions__name">${it.name}</span>
-      </div>`).join('');
-    items = Array.from(box.querySelectorAll('.suggestions__item'));
-    items.forEach((el,i)=>{
-      el.addEventListener('mousedown', (e)=>{
-        e.preventDefault();
-        const id = el.getAttribute('data-id');
-        if(id){ window.location.href = '/Artiste/' + id; }
-      });
-    });
-    highlight(activeIndex);
-    show();
-  }
-  function highlight(index){
-    items.forEach((el,i)=>{
-      if(i===index){ el.classList.add('is-active'); el.setAttribute('aria-selected','true'); }
-      else { el.classList.remove('is-active'); el.setAttribute('aria-selected','false'); }
-    });
-  }
-
-  async function search(q){
-    if(!q || q.trim()===''){ hide(); return; }
-    try{
-      const res = await fetch('/api/search?q='+encodeURIComponent(q.trim()));
-      if(!res.ok){ hide(); return; }
-      const data = await res.json();
-      activeIndex = -1;
-      render(data);
-    }catch{ hide(); }
-  }
-  const debounced = debounce(search, 200);
-
-  input.addEventListener('input', ()=>{ debounced(input.value); });
-  input.addEventListener('focus', ()=>{ if(items.length>0) show(); });
-  input.addEventListener('blur', ()=>{ // delay hide to allow click
-    setTimeout(hide, 100);
-  });
-  input.addEventListener('keydown', (e)=>{
-    if(e.key==='ArrowDown'){
-      if(box.hidden) return;
-      e.preventDefault();
-      if(items.length===0) return;
-      activeIndex = (activeIndex+1) % items.length; highlight(activeIndex);
-    } else if(e.key==='ArrowUp'){
-      if(box.hidden) return;
-      e.preventDefault();
-      if(items.length===0) return;
-      activeIndex = (activeIndex-1+items.length) % items.length; highlight(activeIndex);
-    } else if(e.key==='Enter'){
-      if(!box.hidden && activeIndex>=0 && items[activeIndex]) {
-          e.preventDefault();
-          const id = items[activeIndex].getAttribute('data-id');
-          if (id) {
-              window.location.href = '/Artiste/' + id;
-          }
-      }
-    } else if(e.key==='Escape'){
-      hide();
-    }
-  });
-})();
+    (function(){
+        const input = document.getElementById('searchInput');
+        const box = document.getElementById('suggestions');
+        input.addEventListener('input', async () => {
+            const q = input.value.trim();
+            if(!q) { box.hidden = true; return; }
+            const res = await fetch('/api/search?q=' + q);
+            const data = await res.json();
+            if(data.length > 0) {
+                box.innerHTML = data.map(it => `
+                <div style="display:flex; align-items:center; gap:10px; padding:10px; cursor:pointer;" onclick="window.location.href='/Artiste/${it.id}'">
+                    <img src="${it.image}" style="width:30px; height:30px; border-radius:50%;">
+                    <span>${it.name}</span>
+                </div>`).join('');
+                box.hidden = false;
+            } else { box.hidden = true; }
+        });
+    })();
 </script>
 </body>
 </html>
