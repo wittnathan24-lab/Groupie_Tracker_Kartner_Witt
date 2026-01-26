@@ -21,30 +21,71 @@
                 <a href="/toggle-theme" class="theme-btn">
                     {{if .DarkMode}}☀️ Mode Clair{{else}}🌙 Mode Sombre{{end}}
                 </a>
-                <div class="meta-data">Status: <span style="color: #00ff00;">Online</span></div>
             </div>
         </div>
     </header>
 
-    <main class="artist-grid">
-        {{range .Artists}}
-        <a href="/Artiste/{{.ID}}" class="artist-card">
-            <div class="image-box">
-                <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
-            </div>
-            <div class="info-content">
-                <span class="artist-name">{{.Name}}</span>
-                <div class="members-container">Membre(s) :
-                    {{range .Members}}
-                    <span class="member-tag">{{.}}</span>
-                    {{end}}
+    <div class="content-wrapper">
+        <aside class="filters-panel">
+            <form action="/Liste" method="GET">
+                <h3>Filtres</h3>
+
+                <div class="filter-group">
+                    <label>📅 Année de création</label>
+                    <div class="range-inputs">
+                        <input type="number" name="min_creation" placeholder="Min (1900)" min="1900" max="2026"
+                               value="{{if .Filters.MinCreation}}{{.Filters.MinCreation}}{{end}}">
+                        <span>à</span>
+                        <input type="number" name="max_creation" placeholder="Max (2026)" min="1900" max="2026"
+                               value="{{if ne .Filters.MaxCreation 2030}}{{.Filters.MaxCreation}}{{end}}">
+                    </div>
                 </div>
-                <div class="meta-data">Année de création {{.Created}}</div>
-                <div class="btn-view">CONSULTER LE DOSSIER</div>
+
+                <div class="filter-group">
+                    <label>👥 Nombre de membres</label>
+                    <div class="checkbox-grid">
+                        <label><input type="checkbox" name="members" value="1" {{if index .Filters.Members 1}}checked{{end}}> Solo</label>
+                        <label><input type="checkbox" name="members" value="2" {{if index .Filters.Members 2}}checked{{end}}> Duo</label>
+                        <label><input type="checkbox" name="members" value="3" {{if index .Filters.Members 3}}checked{{end}}> Trio</label>
+                        <label><input type="checkbox" name="members" value="4" {{if index .Filters.Members 4}}checked{{end}}> 4</label>
+                        <label><input type="checkbox" name="members" value="5" {{if index .Filters.Members 5}}checked{{end}}> 5</label>
+                        <label><input type="checkbox" name="members" value="6" {{if index .Filters.Members 6}}checked{{end}}> 6</label>
+                        <label><input type="checkbox" name="members" value="7" {{if index .Filters.Members 7}}checked{{end}}> 7</label>
+                        <label><input type="checkbox" name="members" value="8" {{if index .Filters.Members 8}}checked{{end}}> 8</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="theme-btn" style="width: 100%; margin-bottom: 10px;">Filtrer</button>
+                <a href="/Liste" class="btn-reset">Réinitialiser</a>
+            </form>
+        </aside>
+
+        <main class="artist-grid">
+            {{if not .Artists}}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.7;">
+                Aucun artiste ne correspond à ces critères.
             </div>
-        </a>
-        {{end}}
-    </main>
+            {{end}}
+
+            {{range .Artists}}
+            <a href="/Artiste/{{.ID}}" class="artist-card">
+                <div class="image-box">
+                    <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
+                </div>
+                <div class="info-content">
+                    <span class="artist-name">{{.Name}}</span>
+                    <div class="members-container">Membre(s) :
+                        {{range .Members}}
+                        <span class="member-tag">{{.}}</span>
+                        {{end}}
+                    </div>
+                    <div class="meta-data">Année de création {{.Created}}</div>
+                    <div class="btn-view">CONSULTER LE DOSSIER</div>
+                </div>
+            </a>
+            {{end}}
+        </main>
+    </div>
 </div>
 
 </body>

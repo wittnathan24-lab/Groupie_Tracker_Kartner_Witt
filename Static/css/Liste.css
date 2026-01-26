@@ -12,7 +12,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px; /* Un peu plus large pour accommoder les filtres */
     margin: 0 auto;
 }
 
@@ -67,12 +67,112 @@ body {
     color: var(--primary);
 }
 
+/* --- LAYOUT AVEC FILTRES --- */
+.content-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Panneau Filtres */
+.filters-panel {
+    min-width: 260px;
+    background: var(--card);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.filters-panel h3 {
+    margin-top: 0;
+    color: var(--primary);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+/* Inputs Année (Intervalle) */
+.range-inputs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.range-inputs input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+}
+
+.range-inputs input:focus {
+    border-color: var(--primary);
+}
+
+/* Grille Checkbox (Sélection Multiple) */
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.checkbox-grid label {
+    font-weight: normal;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    transition: color 0.2s;
+}
+
+.checkbox-grid label:hover {
+    color: var(--text);
+}
+
+.btn-reset {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: 1px dashed var(--border);
+    border-radius: 50px;
+    transition: 0.3s;
+}
+
+.btn-reset:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 /* La Grille */
 .artist-grid {
+    flex: 1; /* Prend l'espace restant */
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
-    margin-top: 40px;
 }
 
 /* La Carte Artiste */
@@ -86,6 +186,8 @@ body {
     text-decoration: none;
     color: inherit;
     box-shadow: 0 4px 12px var(--shadow);
+    display: flex;
+    flex-direction: column;
 }
 
 /* Effet au survol */
@@ -139,6 +241,9 @@ body:not(.dark-mode) .image-box img {
 .info-content {
     padding: 20px;
     border-top: 1px solid var(--border);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .artist-name {
@@ -178,7 +283,7 @@ body:not(.dark-mode) .image-box img {
 
 .btn-view {
     display: block;
-    margin-top: 15px;
+    margin-top: auto; /* Pousse le bouton vers le bas */
     text-align: center;
     padding: 10px;
     background: transparent;
@@ -200,4 +305,15 @@ body:not(.dark-mode) .image-box img {
 /* Mode sombre - ajustement texte bouton */
 body.dark-mode .artist-card:hover .btn-view {
     color: #0b1220;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+    .filters-panel {
+        width: 100%;
+        position: static;
+    }
 }

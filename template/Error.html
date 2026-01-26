@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Erreur {{.Code}} | Groupie Tracker</title>
+    <link rel="stylesheet" href="/static/css/global.css">
+</head>
+<body class="dark-mode"> <div class="page">
+    <div class="card" style="border-color: #ef4444; box-shadow: 0 20px 40px rgba(239, 68, 68, 0.2);">
+        <h1 style="color: #ef4444; font-size: 4rem; margin: 0;">{{.Code}}</h1>
+        <h2 style="margin-top: 0;">Oups ! Une erreur est survenue</h2>
+
+        <p style="font-size: 1.2rem; margin: 20px 0;">
+            {{.Message}}
+        </p>
+
+        <div style="margin-top: 30px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; font-family: monospace; font-size: 0.9rem; color: #cbd5e1;">
+            Détail technique : {{.Details}}
+        </div>
+
+        <a href="/Index" class="theme-btn" style="margin-top: 30px; background: #ef4444;">Retour à l'accueil</a>
+    </div>
+</div>
+
+</body>
+</html>
