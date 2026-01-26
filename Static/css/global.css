@@ -1,4 +1,18 @@
+/* 1. Tes variables en MODE CLAIR par défaut */
 :root {
+    --bg1: #f4f7ff;
+    --bg2: #ffffff;
+    --card: #ffffff;
+    --border: rgba(0, 0, 0, 0.08);
+    --text: #1a202c;
+    --muted: rgba(26, 32, 44, 0.6);
+    --primary: #3b82f6;
+    --primary2: #6366f1;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* 2. Tes variables en MODE SOMBRE (quand la case est cochée) */
+body:has(.theme-input:checked) {
     --bg1: #0b1220;
     --bg2: #0f1b33;
     --card: rgba(255, 255, 255, 0.06);
@@ -8,6 +22,104 @@
     --primary: #6aa8ff;
     --primary2: #7c5cff;
     --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* Cacher l'input checkbox */
+.theme-input {
+    display: none;
+}
+
+/* Style du bouton toggle */
+.theme-label {
+    cursor: pointer;
+    padding: 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Gestion des icônes sans JS */
+.icon-sun { display: block; }
+.icon-moon { display: none; }
+
+body:has(.theme-input:checked) .icon-sun { display: none; }
+body:has(.theme-input:checked) .icon-moon { display: block; }
+
+/* Application globale */
+body {
+    background-color: var(--bg1);
+    color: var(--text);
+    transition: 0.3s;
+}
+
+/* Style du Header */
+.main-header {
+    background-color: var(--navbar-bg);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--nav-text);
+    text-decoration: none;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+.nav-menu ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-menu a {
+    color: var(--nav-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+    color: var(--accent);
+}
+
+/* Style du bouton toggle */
+.theme-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.theme-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
 }
 
 * { box-sizing: border-box; }

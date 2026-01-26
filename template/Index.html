@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="/static/css/global.css">
 </head>
 <body>
+<input type="checkbox" id="theme-switch" class="theme-input">
+
+<header class="main-header">
+    <div class="header-container">
+        <div class="logo">
+            <a href="/">🎵 Groupie<span>Tracker</span></a>
+        </div>
+
+        <label for="theme-switch" class="theme-label">
+            <span class="icon-sun">☀️</span>
+            <span class="icon-moon">🌙</span>
+        </label>
+    </div>
+</header>
+
 <div class="page">
     <div class="card">
         <h1 class="title">Bienvenue sur Groupie Tracker</h1>
@@ -25,6 +40,7 @@
     </footer>
 </div>
 <script>
+
 function debounce(fn, delay){
   let t; return function(...args){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), delay); };
 }
