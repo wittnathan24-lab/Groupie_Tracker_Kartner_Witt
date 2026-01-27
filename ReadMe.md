@@ -36,9 +36,8 @@ Ce projet met en pratique :
 | Route           | Méthode | Description                                     |
 |-----------------| ------- |-------------------------------------------------|
 | `/index`        | GET     | Page d’accueil                                  |
-| `/Artiste`      | GET     | Récupère tous les artistes                      |
 | `/Artiste/{id}` | GET     | Page de détails d’un artiste                    |
-| `/Liste`        | GET     | Retourne les données JSON de tous les artistes  |
+| `/Liste`        | GET     | Affiche l'ensemble des artistes                 |
 
 
 ## Fonctionnalités implémentées
