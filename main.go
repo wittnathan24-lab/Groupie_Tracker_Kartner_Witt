@@ -58,7 +58,7 @@ func main() {
 	http.HandleFunc("/Index", safeHandler(IndexPage))
 	http.HandleFunc("/Artiste/", safeHandler(ArtistePage))
 	http.HandleFunc("/Liste", safeHandler(ListePage))
-	http.HandleFunc("/api/search", SearchAPI) // API gère ses erreurs différemment (JSON)
+	http.HandleFunc("/api/search", SearchAPI)
 	http.HandleFunc("/toggle-theme", ToggleThemeHandler)
 
 	// Gestion de la racine pour rediriger ou 404
@@ -83,7 +83,7 @@ func safeHandler(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("🔥 PANIC RECOVERED: %v\nStack: %s", err, debug.Stack())
+				log.Printf("PANIC RECOVERED: %v\nStack: %s", err, debug.Stack())
 				renderError(w, http.StatusInternalServerError, "Erreur Critique du Serveur", "Une erreur inattendue s'est produite. Nos équipes ont été notifiées.")
 			}
 		}()
