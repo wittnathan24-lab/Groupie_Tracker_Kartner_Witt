@@ -16,14 +16,13 @@ Ce projet met en pratique :
    ```bash
    git clone https://github.com/wittnathan24-lab/Groupie_Tracker_Kartner_Witt.git
    cd Groupie_Tracker_Kartner_Witt
-```
 
 2. Assurez-vous d’avoir installé Go (version minimale recommandée : **Go 1.18+**).
 3. Dans le dossier racine du projet, lancez :
 
    ```bash
    go run .
-   ```
+
 
 4. Ouvrez votre navigateur et allez sur :
 
