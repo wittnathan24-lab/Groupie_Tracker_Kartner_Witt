@@ -76,8 +76,7 @@ func main() {
 }
 
 // --- GESTION DES ERREURS & SECURITE ---
-
-// safeHandler est un "Wrapper" : il surveille la fonction qu'il exécute.
+// safeHandler est un wrapper pour les handlers HTTP.
 // Si la fonction panic (crash), il récupère la main et affiche une erreur 500 au lieu de tuer le serveur.
 // - "Aucun crash serveur n'est accepté"
 func safeHandler(fn http.HandlerFunc) http.HandlerFunc {
@@ -108,8 +107,6 @@ func renderError(w http.ResponseWriter, code int, message, details string) {
 		Details: details,
 	})
 }
-
-// --- LOGIQUE METIER ---
 
 func FetchArtists() ([]Artist, error) {
 	resp, err := httpClient.Get("https://groupietrackers.herokuapp.com/api/artists")
