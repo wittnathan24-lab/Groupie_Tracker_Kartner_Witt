@@ -108,6 +108,7 @@ func renderError(w http.ResponseWriter, code int, message, details string) {
 	})
 }
 
+// ---RECUPERATION DES DONNEES DEPUIS L'API'---'
 func FetchArtists() ([]Artist, error) {
 	resp, err := httpClient.Get("https://groupietrackers.herokuapp.com/api/artists")
 	if err != nil {
@@ -126,13 +127,13 @@ func FetchArtists() ([]Artist, error) {
 	return artists, nil
 }
 
+// ---GESTION DES THEMES---
 func getDarkMode(r *http.Request) bool {
 	cookie, err := r.Cookie("theme")
 	return err == nil && cookie.Value == "dark"
 }
 
-// --- HANDLERS ---
-
+// ---MISE EN CACHE SERVEUR DU THEME SELECTIONE---
 func ToggleThemeHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("theme")
 	newTheme := "dark"
@@ -149,6 +150,7 @@ func ToggleThemeHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusSeeOther)
 }
 
+// ---GESTION DES ROUTES---
 func IndexPage(w http.ResponseWriter, r *http.Request) {
 	// Validation stricte de la méthode
 	if r.Method != http.MethodGet {
@@ -291,6 +293,7 @@ func ListePage(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }
 
+// ---FONCTION POUR LA RECHERCHE DES ARTISTES---
 func SearchAPI(w http.ResponseWriter, r *http.Request) {
 	// API JSON : On ne renvoie pas de HTML en cas d'erreur
 	w.Header().Set("Content-Type", "application/json")
