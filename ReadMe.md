@@ -52,7 +52,7 @@ Ce projet met en pratique :
 ### Bonus
 
 * Barre de recherche dynamique pour filtrer les artistes par nom.
-* Filtrage par date de concert / années d’activité.
+* Thème de couleurs alternatif
 
 ## Technologies utilisées
 
